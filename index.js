@@ -307,7 +307,7 @@ function rowMatchesType(row) {
   const selected = getSelectedTypes();
 
   if (!row["source.origin"]) {
-    return selected.size > 0;
+    return false;
   }
 
   return selected.has(row["source.origin"]);
@@ -415,14 +415,23 @@ try {
     } catch (yamlError) {
       console.warn("YAML parse failed, trying fallback:", path, yamlError);
 
-    const fixedText = text.replace(
-      /^description:\s*(.*(?:\n(?!\w[\w.]*:).*)*)/m,
-      (_, value) => {
-        return `description: "${value.replace(/\n/g, " ").replace(/"/g, '\\"').trim()}"`
-      }
-    );
+let fixedText = text;
 
-      parsed = jsyaml.load(fixedText) || {};
+// Quote the name field
+fixedText = fixedText.replace(
+  /^name:\s*(.*)$/m,
+  (_, value) => `name: "${value.replace(/"/g, '\\"')}"`
+);
+
+// Quote the description field
+fixedText = fixedText.replace(
+  /^description:\s*(.*(?:\n(?!\w[\w.]*:).*)*)/m,
+  (_, value) =>
+    `description: "${value.replace(/\n/g, " ").replace(/"/g, '\\"').trim()}"`
+);
+
+parsed = jsyaml.load(fixedText) || {};
+      
     }
 
     const flat = flattenObject(parsed);
@@ -534,14 +543,32 @@ async function loadAllMetadata() {
 
   const allYamlPaths = allPaths.filter(isYamlPath);
 
- const yamlPaths = [];
+const yamlByFolder = new Map();
 
 for (const path of allYamlPaths) {
   if (
     /_metadata\.ya?ml$/i.test(path) ||
     /\/metadata\.ya?ml$/i.test(path)
   ) {
-    yamlPaths.push(path);
+    const folder = dirname(path);
+
+    if (!yamlByFolder.has(folder)) {
+      yamlByFolder.set(folder, []);
+    }
+
+    yamlByFolder.get(folder).push(path);
+  }
+}
+
+const yamlPaths = [];
+
+for (const files of yamlByFolder.values()) {
+  const specific = files.filter(f => /_metadata\.ya?ml$/i.test(f));
+
+  if (specific.length > 0) {
+    yamlPaths.push(...specific);
+  } else {
+    yamlPaths.push(...files);
   }
 }
 
@@ -560,6 +587,17 @@ yamlPaths.map(path => loadYamlFile(path, bnglPaths, aiFiles))
   );
 
 rows = rowGroups.flat();
+
+console.log("YAML files loaded:", yamlPaths.length);
+console.log("Rows created:", rows.length);
+
+console.table(
+  rows.map(r => ({
+    type: r.type,
+    origin: r["source.origin"],
+    collection: r["collection.parent_model"]
+  }))
+);
 
 console.table(
   rows
@@ -818,7 +856,7 @@ if (column === "simulate_tools") {
 
     let iconsHtml = "";
 
-    if (item) {
+    if (item && isTruthyYamlValue(row["playground.visible"])) {
       iconsHtml += renderSingleViewLink(
         item,
         "bngPlaygroundUrl",
@@ -1415,13 +1453,6 @@ document.getElementById("restoreDefaults").addEventListener("click", () => {
     updateStatus();
   });
 
-  document.getElementById("hideAll").addEventListener("click", () => {
-    visibleColumns = new Set();
-    currentPage = 1;
-    renderColumnCheckboxes();
-    renderTable();
-    updateStatus();
-  });
 
   searchEl.addEventListener("input", () => {
     currentPage = 1;

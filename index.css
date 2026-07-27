@@ -239,7 +239,7 @@ button {
   border: 1px solid #ddd;
   border-radius: 6px;
   padding: .5rem;
-  margin: .5rem 0 .5rem;
+  margin: .5rem 0 0;
   background: #fafafa;
 }
 
@@ -388,7 +388,7 @@ button {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 0.2rem 0.6rem;
-  max-height: 260px;
+  max-height: 250px;
   overflow-y: auto;
   padding-right: 0.5rem;
 }
@@ -527,31 +527,16 @@ a {
 .filter-row {
   display: flex;
   flex-wrap: wrap;
-  align-items: stretch;
+  align-items: flex-start;
   gap: 8px;
-}
-
-.compact-compat-features {
-  width: 100%;
-  margin: 0 0 0 0;
-  padding: 0.35rem 0.55rem;
-  box-sizing: border-box;
-}
-
-.compact-compat-features summary {
-  padding: 0;
-  min-height: 0;
-}
-
-.compact-compat-features[open] summary {
-  margin-bottom: 0.35rem;
 }
 
 .compact-filter-options {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.25rem 0.4rem;
+  justify-content: flex-start;
+  gap: 0.2rem 0.3rem;
 }
 .compact-filter-options label {
   display: inline-flex;
@@ -571,17 +556,19 @@ a {
 .difficulty-filter,
 .collections-filter,
 .source-filter {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   flex-wrap: wrap;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .difficulty-filter h2,
 .collections-filter h2,
 .source-filter h2 {
   margin: 0;
-  margin-right: 15px;
-  font-size: 1rem;
+  margin-right: 10px;
+  font-size: 0.9rem;
 }
 
 .difficulty-filter .filter-group,
@@ -590,6 +577,77 @@ a {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px;
 }
 
+.filter-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.difficulty-filter,
+.collections-filter,
+.source-filter {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.compatibility-panel {
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.compatibility-panel h2 {
+    margin: 0;
+    white-space: nowrap;
+}
+
+.compat-icon {
+    width: 23px;
+    height: 23px;
+    object-fit: contain;
+}
+
+.compatibility-panel .filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+}
+
+.compatibility-panel .filter-group label {
+    margin: 0;
+}
+
+.features-panel {
+    width: 100%;
+}
+
+.filter-top-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+    align-items: start;
+}
+
+.features-panel summary {
+    display: flex;
+    align-items: center;
+}
+
+.features-panel .feature-options {
+    display: none;
+}
+
+.features-panel[open] .feature-options {
+    display: flex;
+    grid-column: 1 / -1;
+    flex-wrap: wrap;
+}
