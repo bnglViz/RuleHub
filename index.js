@@ -1468,7 +1468,7 @@ document.getElementById("restoreDefaults").addEventListener("click", () => {
     currentPage -= 1;
     renderTable();
   });
-
+  
   nextPageBtn.addEventListener("click", () => {
     currentPage += 1;
     renderTable();
