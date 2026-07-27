@@ -239,7 +239,7 @@ button {
   border: 1px solid #ddd;
   border-radius: 6px;
   padding: .5rem;
-  margin: 1rem 0 1.5rem;
+  margin: .5rem 0 .5rem;
   background: #fafafa;
 }
 
@@ -289,7 +289,7 @@ button {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 8px; /* Spacing between the text "Filters" and the arrow */
+  gap: 8px;
   outline: none;
   user-select: none;
 }
@@ -471,7 +471,7 @@ a {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  margin: 1rem 0 0;
+  margin: .7rem 0 .7;
 }
 
 .pagination-controls {
@@ -525,29 +525,71 @@ a {
 }
 
 .filter-row {
-    display: flex;
-    gap: 12px;
-    margin: 1rem 0;
-    align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 8px;
 }
 
-.small-filter {
-    flex: 1;
-    min-width: 300px;
-    margin: 0;
+.compact-compat-features {
+  width: 100%;
+  margin: 0 0 0 0;
+  padding: 0.35rem 0.55rem;
+  box-sizing: border-box;
 }
 
-.difficulty-filter {
-  flex: 0.8;
+.compact-compat-features summary {
+  padding: 0;
+  min-height: 0;
+}
+
+.compact-compat-features[open] summary {
+  margin-bottom: 0.35rem;
+}
+
+.compact-filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.4rem;
+}
+.compact-filter-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 0 0 auto;
+  padding: 0.12rem 0.25rem;
   margin: 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
-.collections-filter {
-  flex: 0.4;
-  margin: 0;
-}
-
+.difficulty-filter,
+.collections-filter,
 .source-filter {
-  flex: 1.2;
-  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
+
+.difficulty-filter h2,
+.collections-filter h2,
+.source-filter h2 {
+  margin: 0;
+  margin-right: 15px;
+  font-size: 1rem;
+}
+
+.difficulty-filter .filter-group,
+.collections-filter .filter-group,
+.source-filter .filter-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
