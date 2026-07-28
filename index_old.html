@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RuleHub Models Metadata</title>
+
+  <link rel="stylesheet" href="index.css" />
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4/dist/js-yaml.min.js"></script>
+  <script src="index.js" defer></script>
+</head>
+
+<body>
+<header class="site-header">
+
+  <h1>RuleHub</h1>
+
+  <h2>World of Rule-Based Models</h2>
+
+  <nav class="main-nav">
+    <a href="index.html" class="active"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0 0 24 24">
+<path d="M 12 2.0996094 L 1 12 L 4 12 L 4 21 L 11 21 L 11 15 L 13 15 L 13 21 L 20 21 L 20 12 L 23 12 L 12 2.0996094 z M 12 4.7910156 L 18 10.191406 L 18 11 L 18 19 L 15 19 L 15 13 L 9 13 L 9 19 L 6 19 L 6 10.191406 L 12 4.7910156 z"></path>
+</svg>Models</a>
+    <a href="description.html">Rule-Based Modeling</a>
+    <a href="publications.html">Publications</a>
+    <a href="tools.html">Tools</a>
+    <a href="about.html">About</a>
+  </nav>
+
+</header>
+
+  <section class="hero">
+
+  <div class="hero-left">
+    
+    <h3 id="modelCount" class="stat total-stat" style="
+        margin-bottom: 3px;
+        margin-top: 8px;
+        padding-bottom: 3px;
+        padding-top: 3px;
+        padding-right: 8px;
+        padding-left: 8px;
+        font-weight: 600;
+    "></h3>
+  
+<div id="modelSummary" class="model-stats"></div>
+
+  </div>
+
+ <div class="hero-right">
+
+<div class="search-controls">
+
+  <input
+    id="search"
+    type="search"
+    placeholder="🔍 Search models..."
+    aria-label="Search models"
+  />
+
+<div class="controls-box">
+    <span class="controls-title">Controls</span>
+
+    <button id="restoreDefaults" class="small-button">
+        Restore Default
+    </button>
+
+    <button id="expand-all" class="small-button">
+        Expand All
+    </button>
+
+    <button id="collapse-all" class="small-button">
+        Collapse All
+    </button>
+</div>
+
+</div>
+
+  </div>
+
+</section>
+
+<div id="status">Loading...</div>
+
+<div class="filter-row">
+
+<details class="filter-panel difficulty-filter" closed>
+  <summary><h2>Show By Difficulty</h2></summary>
+
+  <div class="filter-group">
+    <label class="difficulty-beginner">
+      <input type="checkbox" class="difficulty-checkbox" value="beginner" checked>
+      Beginner
+    </label>
+
+    <label class="difficulty-intermediate">
+      <input type="checkbox" class="difficulty-checkbox" value="intermediate" checked>
+      Intermediate
+    </label>
+
+    <label class="difficulty-advanced">
+      <input type="checkbox" class="difficulty-checkbox" value="advanced" checked>
+      Advanced
+    </label>
+  </div>
+</details>
+
+<details class="filter-panel collections-filter" closed>
+  <summary><h2>Collections</h2></summary>
+
+  <div class="filter-group">
+    <label>
+      <input type="checkbox" id="showCollections">
+      Show collection models
+    </label>
+  </div>
+</details>
+
+ <details class="filter-panel source-filter" closed>
+  <summary><h2>Show By Source</h2></summary>
+
+  <div class="filter-group">
+    <label><input type="checkbox" class="type-checkbox" value="ai-generated" checked> AI-Generated</label>
+    <label><input type="checkbox" class="type-checkbox" value="tutorial" checked> Tutorials</label>
+    <label><input type="checkbox" class="type-checkbox" value="published" checked> Published</label>
+    <label><input type="checkbox" class="type-checkbox" value="contributed" checked> Contributed</label>
+    <label><input type="checkbox" class="type-checkbox" value="test-case" checked> Test-Case</label>
+    <label><input type="checkbox" class="type-checkbox" value="ported-from-sbml" checked> SBML Port</label>
+  </div>
+</details>
+</div>
+
+<div class="filter-row">
+  <details class="filter-panel compact-compat-features" closed>
+    <summary><h2>Compatibility & Features</h2></summary>
+
+    <div class="compact-filter-groups">
+      <div class="compact-filter-group">
+        <div class="compact-filter-title">Compatibility</div>
+        <div class="compact-filter-options">
+          <label><input type="checkbox" class="feature-checkbox" value="compatibility.bng2_compatible"> BNG2 <img src="icons/BNG2.svg" width="20"></label>
+          <label><input type="checkbox" class="feature-checkbox" value="compatibility.nfsim_compatible"> NFsim <img src="icons/NFsim.svg" width="20"></label>
+          <label><input type="checkbox" class="feature-checkbox" value="compatibility.vcell_compatible"> VCell <img src="icons/vcell.svg" width="20"></label>
+          <label><input type="checkbox" class="feature-checkbox" value="compatibility.molclustpy_compatible"> MolClustPy <img src="icons/Molclustpy.svg" width="20"></label>
+          <label><input type="checkbox" class="feature-checkbox" value="compatibility.mpd_compatible"> MPD <img src="icons/mpd.png" width="20"></label>
+        </div>
+      </div>
+
+      <div class="compact-filter-group">
+        <div class="compact-filter-title">Features</div>
+        <div class="compact-filter-options">
+          <label><input type="checkbox" class="feature-checkbox" value="compatibility.uses_cbngl_compartments"> CBNGL Compartments <img src="icons/cBNGL.svg" width="20"></label>
+          <label><input type="checkbox" class="feature-checkbox" value="compatibility.uses_vcell_compartments"> VCell Compartments <img src="icons/vcell-compartments.svg" width="20"></label>
+          <label><input type="checkbox" class="feature-checkbox" value="compatibility.uses_energy"> Energy <img src="icons/einstein-equation.svg" width="20"></label>
+          <label><input type="checkbox" class="feature-checkbox" value="compatibility.uses_functions"> Functions <img src="icons/functions.svg" width="20"></label>
+          <label><input type="checkbox" class="feature-checkbox" value="compatibility.uses_moveconnected"> MoveConnected</label>
+          <label><input type="checkbox" class="feature-checkbox" value="compatibility.uses_trash_molecules"> Trash Molecules <img src="icons/trash1.svg" width="20"></label>
+          <label><input type="checkbox" class="feature-checkbox" value="compatibility.uses_anchors"> Anchors <img src="icons/anchor.svg" width="20"></label>
+          <label><input type="checkbox" class="feature-checkbox" value="compatibility.uses_multiple_identical_sites"> Multiple Identical Sites <img src="icons/multiple_sites.svg" width="20"></label>
+          <label><input type="checkbox" class="feature-checkbox" value="compatibility.uses_deletes_molecules"> Deletes Molecules</label>
+          <label><input type="checkbox" class="feature-checkbox" value="compatibility.uses_exclude_include_reactants"> Exclude/Include Reactants <img src="icons/include_exclude_reactants.svg" width="20"></label>
+          <label><input type="checkbox" class="feature-checkbox" value="compatibility.uses_generate_network"> Generate Network</label>
+          <label><input type="checkbox" class="feature-checkbox" value="features.uses_totalrate"> Total Rate</label>
+        </div>
+      </div>
+    </div>
+  </details>
+</div>
+
+  <details class="filter-panel" closed>
+  <summary><h2>Select Columns</h2></summary>
+
+    <div class="column-header">
+
+      <div class="column-actions">
+        <button id="showDefault" class="small-button">Default columns</button>
+        <button id="showAll" class="small-button">Show all</button>
+        <button id="hideAll" class="small-button">Hide all</button>
+      </div>
+    </div>
+
+    <!--
+      The following column checkboxes are intentionally commented out / hidden:
+      file,
+      path,
+      id,
+      bngl_code,
+      bngl_file,
+      bngl_path,
+      yaml_file,
+      yaml_path,
+      github,
+      bngl_item,
+      yaml_github,
+      source.source_path,
+      source.origin,
+      playground.visible,
+      playground.featured,
+      playground.gallery_category,
+      playground.gallery_categories,
+      contributors,
+      parse_error,
+      collection.count,
+      collection.parent_model,
+      collection.type,
+      collection.variant_key,
+      source.original_format,
+      source.original_repository,
+      raw
+    -->
+
+    <div id="columnCheckboxes" class="checkbox-grid"></div>
+  </details>
+
+  <div class="table-wrap">
+    <table id="metadataTable"></table>
+  </div>
+
+  <div class="pagination">
+    <div id="pageSummary"></div>
+
+    <div class="pagination-controls">
+      <label>
+        Rows per page:
+        <select id="pageSize">
+          <option value="50" selected>50</option>
+          <option value="100">100</option>
+          <option value="all">All</option>
+        </select>
+      </label>
+
+      <button id="firstPage">First</button>
+      <button id="prevPage">Previous</button>
+      <span id="pageNumber"></span>
+      <button id="nextPage">Next</button>
+      <button id="lastPage">Last</button>
+    </div>
+  </div>
+</body>
+</html>
