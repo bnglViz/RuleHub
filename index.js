@@ -392,7 +392,7 @@ const briefAi = aiFiles.find(file =>
 
 const longAi = aiFiles.find(file =>
   dirname(file) === folder &&
-  file.endsWith("_coder.md")
+  file.endsWith("_aigenerated_detailed.md")
 );
   const bnglItems = makeBnglItems(path, bnglPaths);
 
@@ -538,7 +538,7 @@ async function loadAllMetadata() {
 
   const aiFiles = allPaths.filter(path =>
   path.endsWith("_aigenerated.md") ||
-  path.endsWith("_coder.md")
+  path.endsWith("aigenerated_detailed.md")
 );
 
   const allYamlPaths = allPaths.filter(isYamlPath);
