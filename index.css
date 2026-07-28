@@ -200,9 +200,9 @@ input[type="search"] {
     padding: 0 8px;
     gap: 6px;
 
-    border: 1px solid #ccc;
+    border: 1px solid #9b9a9a;
     border-radius: 8px;
-    background: #fafafa;
+    background: #eeeff1;
 }
 
 .controls-title {
@@ -219,6 +219,8 @@ input[type="search"] {
     padding: 2px 8px;
     white-space: nowrap;
     font-size: 0.85rem;
+    background: #f5f6f8;
+    border: 1px solid #686767;
 }
 
 button {
@@ -226,7 +228,8 @@ button {
   font-size: .87rem;
   cursor: pointer;
   border-radius: 5px;
-  border: 1px solid #ccc;
+  background: #f5f6f8;
+  border: 1px solid #686767;
 }
 
 #status {
@@ -236,11 +239,11 @@ button {
 
 .filter-panel,
 .column-panel {
-  border: 1px solid #ddd;
+  border: 1px solid #686767;
   border-radius: 6px;
   padding: .5rem;
   margin: .5rem 0 0;
-  background: #fafafa;
+  background: #eeeff1;
 }
 
 .filter-panel summary {
@@ -339,8 +342,8 @@ button {
   font-size: .8rem;
   padding: .12rem .3rem;
   border-radius: 5px;
-  border: 1px solid #ccc;
-  background: #fff;
+  border: 1px solid #686767;
+  background: #f5f6f8;
 }
 
 .difficulty-beginner {
@@ -545,9 +548,9 @@ a {
   flex: 0 0 auto;
   padding: 0.12rem 0.25rem;
   margin: 0;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #686767;
   border-radius: 4px;
-  background: #fff;
+  background: #f5f6f8;
   font-size: 0.8rem;
   line-height: 1.2;
   white-space: nowrap;
