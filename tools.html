@@ -24,7 +24,195 @@
     <a href="description.html">Rule-Based Modeling</a>
     <a href="publications.html">Publications</a>
     <a href="tools.html" class="active">Tools</a>
+    <a href="resources.html">Resources</a>
     <a href="about.html">About</a>
   </nav>
 
 </header>
+
+<h2 class="page-title" style="margin-top:35px;">
+Software that Uses BioNetGen
+</h2>
+
+<p>
+This page links to software that uses BioNetGen code or BNGL-formatted
+models. <em>Note: This list is a work in progress and may not be complete.</em>
+</p>
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+<tr>
+<th>Software</th>
+<th>Description</th>
+<th>References</th>
+</tr>
+</thead>
+
+<tbody>
+
+<tr>
+<td><a href="https://amici.readthedocs.io/en/latest/">AMICI</a></td>
+<td>
+Provides an interface to the CVODES and IDAS solvers for models specified in
+SBML or <a href="https://pysb.org/">PySB</a>, both of which are capable of
+representing BNGL models.
+</td>
+<td></td>
+</tr>
+
+<tr>
+<td><a href="https://biosimulators.org/">BioSimulators</a></td>
+<td>
+Provides a registry of biosimulation tools supporting many different model
+formats, including BNGL.
+</td>
+<td></td>
+</tr>
+
+<tr>
+<td><a href="https://www.biouml.org/">BioUML</a></td>
+<td>
+Java platform for omics data analysis; a BNG plugin allows users to edit
+rule-based models as either BioUML diagrams or BNGL text files.
+</td>
+<td></td>
+</tr>
+
+<tr>
+<td><a href="https://kappalanguage.org/">Kappa</a></td>
+<td>Another prominent rule-based modeling language. The syntax used to be very similiar to BNGL, but that is less true now.</td>
+<td><a href="https://doi.org/10.1093/bioinformatics/bty272">Boutillier et al.</a></td>
+</tr>
+<tr>
+<td><a href="https://mcell.org/">MCell</a></td>
+<td>Uses 3D cellular models and Monte Carlo algorithms for simulating the movements and reactions of molecules within and between cells; the latest version, MCell4, uses BNGL syntax for rule-based modeling</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://git.informatik.uni-rostock.de/mosi/mlrules2">ML-Rules</a></td>
+<td>Multi-level rule-based modeling formalism for modeling biochemical reaction networks</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://molclustpy.github.io/">MolClustPy</a></td>
+<td>A Python package to characterize multivalent biomolecular clusters</td>
+<td><a href="https://academic.oup.com/bioinformatics/article/39/6/btad385/7199581">Chattaraj et al.</a></td>
+</tr>
+<tr>
+<td><a href="http://michaelsneddon.net/nfsim/">NFsim</a></td>
+<td>Biochemical reaction simulator designed to handle large numbers of possible molecular interactions or states; uses BNGL for model specification</td>
+<td></td>
+</tr>
+<tr>
+                                    <td>Parts &amp;Pools</td>
+                                    <td>Employs BioNetGen to help design synthetic gene circuits 
+                                    <!-- Can't find a suitable link or download site -->
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="https://petab.readthedocs.io/en/latest/">PEtab</a>
+                                    </td>
+                                    <td>Data format for specifying systems biology parameter estimation problems using SBML</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="https://pleione.readthedocs.io/en/latest/">Pleione</a>
+                                    </td>
+                                    <td>
+                                        Provides methods for parameterizing models written in BNGL or <em>kappa</em>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="https://bionetfit.nau.edu/">PyBioNetFit</a>
+                                    </td>
+                                    <td>Provides a suite of algorithms for parameterizing models specified in BNGL or SBML</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="https://pypesto.readthedocs.io/en/latest/#">pyPESTO</a>
+                                    </td>
+                                    <td>
+                                        Python toolbox for parameter estimation, including options to interface with <a href="https://amici.readthedocs.io/en/latest/index.html">AMICI</a>
+                                        and <a href="https://petab.readthedocs.io/en/latest/">PEtab</a>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="https://pysb.org/">PySB</a>
+                                    </td>
+                                    <td>Allows for building models of biochemical systems as Python programs; internally translates Python code into BNGL or Kappa rules</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="https://pyvipr.readthedocs.io/en/latest/">PyViPR</a>
+                                    </td>
+                                    <td>
+                                        IPython widget for interactively visualizing systems biology models using <a href="https://pysb.org/">PySB</a>
+                                        ; supports BNGL and SBML models
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="https://aaltodoc.aalto.fi/handle/123456789/43847">RuleDSD</a>
+                                    </td>
+                                    <td>
+                                        Converts a DNA Strand Displacement (DSD) model into BNGL, then uses <a href="https://pysb.org/">PySB</a>
+                                        to perform simulation and analysis
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="https://www.smoldyn.org/">Smoldyn</a>
+                                    </td>
+                                    <td>Performs cell-scale biochemical simulations; can perform rule-based modeling using either its native wildcards or by running BioNetGen on BNGL files</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="https://pmbm.ippt.pan.pl/web/Spatkin">SPATKIN</a>
+                                    </td>
+                                    <td>Uses an extension of BNGL to simluate biomolecular interactions on or at a 2D surface</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="https://www.biosys.uni-jena.de/Members/Gerd+Gruenert/SRSim.html">SRSim</a>
+                                    </td>
+                                    <td>Spatially simulates Brownian Dynamics of rule-based reaction systems (defined in BNGL) in 3D</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="https://github.com/Frankie-Spencer/virtual_dna_lab">VDNA-Lab</a>
+                                    </td>
+                                    <td>Employs rule-based modeling (in BNGL format) to simulate DNA assembly systems</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a href="https://vcell.org/bionetgen/">VirtualCell</a>
+                                    </td>
+                                    <td>Cell biological systems modeling platform that uses a central database; BioNetGen@VCell can be used to perform rule-based modeling in the platform</td>
+                                    <td></td>
+                                </tr>
+</tbody>
+
+</table>
+
+</div>
+
+</body>
+</html>

@@ -462,7 +462,7 @@ code {
 }
 
 a {
-  color: #0757a8;
+  color: #0000ee;
 }
 
 .pagination {
@@ -650,4 +650,37 @@ a {
     display: flex;
     grid-column: 1 / -1;
     flex-wrap: wrap;
+}
+
+.page-title {
+  margin-top: 35px;
+}
+
+.about-section h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #4c4faf;
+    margin-bottom: 0.7rem;
+    margin-top: 0.7rem;
+    padding-bottom: .2rem;
+}
+
+.about-section {
+  margin-bottom: 1.5rem;
+}
+
+.person-name{
+    font-weight:600;
+    font-size:1.05rem;
+}
+
+.person-role{
+    color:#666;
+    margin-top:2px;
+}
+
+.person {
+    margin-bottom: 1rem;
+    padding-left: .75rem;
+    border-left: 3px solid #4c4faf;
 }
