@@ -859,10 +859,12 @@ if (column === "tools") {
     iconsHtml += renderSingleViewLink(value, "bnglVizUrl", "icons/bngl.svg", "bnglViz");
     iconsHtml += renderSingleViewLink(value, "rulesRailRoadUrl", "icons/RR.svg", "RulesRailRoad");
 
-   const modelFolder = row.yaml_file
-  .replace(/_metadata\.ya?ml$/i, "")
-  .replace(/\.ya?ml$/i, "");
-    console.log("modelFolder =", modelFolder, "path =", row.path);
+const modelFolder = row.path
+  .split("/")
+  .pop()
+  .replace(/\.bngl$/i, "");
+
+console.log("modelFolder =", modelFolder);
 
 if (isTruthyYamlValue(row["compatibility.mpd_compatible"])) {
   iconsHtml += `
