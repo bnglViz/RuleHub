@@ -576,12 +576,33 @@ for (const path of allYamlPaths) {
 const yamlPaths = [];
 
 for (const files of yamlByFolder.values()) {
-  const specific = files.filter(f => /_metadata\.ya?ml$/i.test(f));
 
-  if (specific.length > 0) {
+  const aiSpecific = files.filter(f =>
+    /_metadata_aigenerated\.ya?ml$/i.test(f)
+  );
+
+  const aiGeneric = files.filter(f =>
+    /\/metadata_aigenerated\.ya?ml$/i.test(f)
+  );
+
+  const specific = files.filter(f =>
+    /_metadata\.ya?ml$/i.test(f) &&
+    !/_metadata_aigenerated\.ya?ml$/i.test(f)
+  );
+
+  const generic = files.filter(f =>
+    /\/metadata\.ya?ml$/i.test(f) &&
+    !/metadata_aigenerated\.ya?ml$/i.test(f)
+  );
+
+  if (aiSpecific.length > 0) {
+    yamlPaths.push(...aiSpecific);
+  } else if (aiGeneric.length > 0) {
+    yamlPaths.push(...aiGeneric);
+  } else if (specific.length > 0) {
     yamlPaths.push(...specific);
   } else {
-    yamlPaths.push(...files);
+    yamlPaths.push(...generic);
   }
 }
 
@@ -859,10 +880,12 @@ if (column === "tools") {
     iconsHtml += renderSingleViewLink(value, "bnglVizUrl", "icons/bngl.svg", "bnglViz");
     iconsHtml += renderSingleViewLink(value, "rulesRailRoadUrl", "icons/RR.svg", "RulesRailRoad");
 
-   const modelFolder = row.yaml_file
-  .replace(/_metadata\.ya?ml$/i, "")
-  .replace(/\.ya?ml$/i, "");
-    console.log("modelFolder =", modelFolder, "path =", row.path);
+const modelFolder = row.path
+  .split("/")
+  .pop()
+  .replace(/\.bngl$/i, "");
+
+console.log("modelFolder =", modelFolder);
 
 if (isTruthyYamlValue(row["compatibility.mpd_compatible"])) {
   iconsHtml += `
