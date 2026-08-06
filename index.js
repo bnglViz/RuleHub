@@ -905,14 +905,18 @@ if (column === "simulate_tools") {
 
     let iconsHtml = "";
 
-    if (item && isTruthyYamlValue(row["playground.visible"])) {
-      iconsHtml += renderSingleViewLink(
+const showBNGPlayground =
+    isTruthyYamlValue(row["compatibility.bngp_compatible"]) ||
+    isTruthyYamlValue(row["playground.visible"]);
+
+if (item && showBNGPlayground) {
+    iconsHtml += renderSingleViewLink(
         item,
         "bngPlaygroundUrl",
         "icons/BNGPlayground.svg",
         "bngPlayground"
-      );
-    }
+    );
+}
 
     if (isTruthyYamlValue(row["compatibility.molclustpy_compatible"])) {
       iconsHtml += `
@@ -1015,7 +1019,7 @@ if (column === "ai_column") {
     <a href="https://pubmed.ncbi.nlm.nih.gov/${encodeURIComponent(pmid)}/"
        target="_blank"
        rel="noopener">
-      PMID:${escapeHtml(pmid)}
+      ${escapeHtml(pmid)}
     </a>
   `;
 }
