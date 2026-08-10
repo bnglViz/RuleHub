@@ -1010,10 +1010,12 @@ if (column === "ai_column") {
     `;
   }
 
-  if (column === "citation.pmid") {
-  if (!value) return "";
+if (column === "citation.pmid") {
+  const pmid = String(value ?? "").trim();
 
-  const pmid = String(value).trim();
+  if (!pmid || pmid.toLowerCase() === "no id") {
+    return "";
+  }
 
   return `
     <a href="https://pubmed.ncbi.nlm.nih.gov/${encodeURIComponent(pmid)}/"
