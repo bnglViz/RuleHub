@@ -1,4 +1,4 @@
-const OWNER = "Psuedonerd";
+const OWNER = "vcellmike"; //Psuedonerd
 const REPO = "RuleHub";
 const BRANCH = "master";
 
