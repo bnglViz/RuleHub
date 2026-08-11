@@ -135,6 +135,8 @@ const HIDDEN_COLUMN_CHECKBOXES = new Set([
   "compatibility.uses_multiple_identical_sites",
   "compatibility.uses_trash_molecules",
   "compatibility.uses_vcell_compartments",
+  "compatibility.database_visible",
+  "has_named_yaml",
   ...FEATURE_FILTER_COLUMNS,
   ...COMMENTED_OUT_COLUMN_CHECKBOXES
 ]);
@@ -345,6 +347,10 @@ function rowMatchesCollections(row) {
 function isTruthyYamlValue(value) {
   const text = String(value ?? "").trim().toLowerCase();
   return text === "true" || text === "yes" || text === "1";
+}
+
+function isDatabaseVisible(row) {
+  return isTruthyYamlValue(row["compatibility.database_visible"]);
 }
 
 function makeBnglVizUrl(item) {
@@ -724,6 +730,12 @@ const rowGroups = await Promise.all(
 
 rows = rowGroups.flat();
 
+console.log("Rows before database visibility filter:", rows.length);
+
+rows = rows.filter(row => isDatabaseVisible(row));
+
+console.log("Rows after database visibility filter:", rows.length);
+
 console.log("Metadata sources loaded:", metadataSources.length);
 console.log("Rows created:", rows.length);
 
@@ -833,6 +845,8 @@ console.log("rows:", rows.length);
     "compatibility.uses_multiple_identical_sites",
     "compatibility.uses_trash_molecules",
     "compatibility.uses_vcell_compartments",
+    "compatibility.database_visible",
+    "has_named_yaml",
     "parse_error"
   ];
 
