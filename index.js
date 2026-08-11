@@ -135,6 +135,8 @@ const HIDDEN_COLUMN_CHECKBOXES = new Set([
   "compatibility.uses_multiple_identical_sites",
   "compatibility.uses_trash_molecules",
   "compatibility.uses_vcell_compartments",
+  "compatibility.database_visible",
+  "has_named_yaml",
   ...FEATURE_FILTER_COLUMNS,
   ...COMMENTED_OUT_COLUMN_CHECKBOXES
 ]);
@@ -347,6 +349,10 @@ function isTruthyYamlValue(value) {
   return text === "true" || text === "yes" || text === "1";
 }
 
+function isDatabaseVisible(row) {
+  return isTruthyYamlValue(row["compatibility.database_visible"]);
+}
+
 function makeBnglVizUrl(item) {
   const url = new URL(BNGLVIZ_PAGE);
   url.searchParams.set("bngl", item.rawUrl);
@@ -391,34 +397,82 @@ function makeBnglItems(yamlPath, bnglPaths) {
 });
 }
 
-async function loadYamlFile(path, bnglPaths, aiFiles) {
-  const rawUrl = RAW_BASE + path;
-  const yamlGitHubUrl = GITHUB_BLOB_BASE + path;
-  const readmeUrl = GITHUB_BLOB_BASE + dirname(path) + "/README.md";
-  
-  const folder = dirname(path);
+async function loadYamlFile(metadataSource, aiFiles) {
+  const path = metadataSource.metadataPath;
+  const folder = metadataSource.folder;
+  const bnglPaths = metadataSource.bnglPaths;
+  const hasYamlLink = metadataSource.hasYamlLink;
 
-const briefAi = aiFiles.find(file =>
-  dirname(file) === folder &&
-  file.endsWith("_aigenerated.md")
-);
+const rawUrl = path ? RAW_BASE + path : null;
+const yamlGitHubUrl = rawUrl;
 
-const longAi = aiFiles.find(file =>
-  dirname(file) === folder &&
-  file.endsWith("_aigenerated_detailed.md")
-);
+  const readmeUrl = GITHUB_BLOB_BASE + folder + "/README.md";
+
+  const briefAi = aiFiles.find(file =>
+    dirname(file) === folder &&
+    file.endsWith("_aigenerated.md")
+  );
+
+  const longAi = aiFiles.find(file =>
+    dirname(file) === folder &&
+    file.endsWith("_aigenerated_detailed.md")
+  );
+
+  /*
+   * If there is no YAML at all, create rows directly from the BNGL files.
+   */
+  if (!path) {
+    return bnglPaths.map(bnglPath => {
+      const item = {
+        path: bnglPath,
+        label: basename(bnglPath),
+        rawUrl: RAW_BASE + bnglPath,
+        githubUrl: GITHUB_BLOB_BASE + bnglPath
+      };
+
+      item.bnglVizUrl = makeBnglVizUrl(item);
+      item.rulesRailRoadUrl = makeRulesRailRoadUrl(item);
+      item.bngPlaygroundUrl = makeBngPlaygroundUrl(item);
+
+      return {
+        type: typeFromPath(bnglPath),
+        file: basename(bnglPath),
+        path: bnglPath,
+
+        bngl_file: basename(bnglPath),
+        bngl_path: bnglPath,
+
+        yaml_file: "",
+        yaml_path: "",
+
+        github: readmeUrl,
+        github_link: readmeUrl,
+
+        yaml_github: null,
+        raw: null,
+
+        bngl_item: item,
+        tools: item,
+
+        brief_ai: briefAi ? GITHUB_BLOB_BASE + briefAi : null,
+        long_ai: longAi ? GITHUB_BLOB_BASE + longAi : null
+      };
+    });
+  }
+
   const bnglItems = makeBnglItems(path, bnglPaths);
 
-console.log(
-  "Matches:",
-  path,
-  bnglItems.map(b => b.path)
-);
+  console.log(
+    "Matches:",
+    path,
+    bnglItems.map(b => b.path)
+  );
 
-console.log("YAML:", path);
-console.log("BNGL items:", bnglItems);
+  console.log("YAML being read:", path);
+  console.log("YAML link enabled:", hasYamlLink);
+  console.log("BNGL items:", bnglItems);
 
-try {
+  try {
     const text = await fetchText(rawUrl);
 
     let parsed;
@@ -428,108 +482,147 @@ try {
     } catch (yamlError) {
       console.warn("YAML parse failed, trying fallback:", path, yamlError);
 
-let fixedText = text;
+      let fixedText = text;
 
-// Quote the name field
-fixedText = fixedText.replace(
-  /^name:\s*(.*)$/m,
-  (_, value) => `name: "${value.replace(/"/g, '\\"')}"`
-);
+      fixedText = fixedText.replace(
+        /^name:\s*(.*)$/m,
+        (_, value) => `name: "${value.replace(/"/g, '\\"')}"`
+      );
 
-// Quote the description field
-fixedText = fixedText.replace(
-  /^description:\s*(.*(?:\n(?!\w[\w.]*:).*)*)/m,
-  (_, value) =>
-    `description: "${value.replace(/\n/g, " ").replace(/"/g, '\\"').trim()}"`
-);
+      fixedText = fixedText.replace(
+        /^description:\s*(.*(?:\n(?!\w[\w.]*:).*)*)/m,
+        (_, value) =>
+          `description: "${value.replace(/\n/g, " ").replace(/"/g, '\\"').trim()}"`
+      );
 
-parsed = jsyaml.load(fixedText) || {};
-      
+      parsed = jsyaml.load(fixedText) || {};
     }
 
     const flat = flattenObject(parsed);
-    
+
     console.log(flat);
-console.log(flat["source.origin"]);
+    console.log(flat["source.origin"]);
+
+    /*
+     * If this folder has no BNGL files, preserve the metadata row.
+     */
     if (bnglItems.length === 0) {
       return [{
         type: typeFromPath(path),
         file: basename(path),
         path,
+
         yaml_file: basename(path),
         yaml_path: path,
+
         github: readmeUrl,
         github_link: readmeUrl,
+
         yaml_github: yamlGitHubUrl,
+        has_named_yaml: hasYamlLink,
         raw: rawUrl,
+
         bngl_item: null,
         tools: null,
+
+        brief_ai: briefAi ? GITHUB_BLOB_BASE + briefAi : null,
+        long_ai: longAi ? GITHUB_BLOB_BASE + longAi : null,
+
         ...flat
       }];
     }
 
-return bnglItems.map(item => ({
-  type: typeFromPath(path),
-  file: basename(item.path),
-  path: item.path,
-  yaml_file: path,
-  yaml_path: path,
-  bngl_file: item.label,
-  bngl_path: item.path,
-  github: readmeUrl,
-  github_link: readmeUrl,
-  yaml_github: yamlGitHubUrl,
-  raw: rawUrl,
-  bngl_item: item,
-  tools: item,
+    return bnglItems.map(item => ({
+      type: typeFromPath(path),
 
-  brief_ai: briefAi ? GITHUB_BLOB_BASE + briefAi : null,
-  long_ai: longAi ? GITHUB_BLOB_BASE + longAi : null,
+      file: basename(item.path),
+      path: item.path,
 
-  ...flat
-}));
+      yaml_file: basename(path),
+      yaml_path: path,
+
+      bngl_file: item.label,
+      bngl_path: item.path,
+
+      github: readmeUrl,
+      github_link: readmeUrl,
+
+      /*
+      * yaml_github points to whichever YAML file is being used.
+      * has_named_yaml tells the UI whether it is a NAME_metadata.yaml file.
+      */
+      yaml_github: yamlGitHubUrl,
+      has_named_yaml: hasYamlLink,
+
+      raw: rawUrl,
+
+      bngl_item: item,
+      tools: item,
+
+      brief_ai: briefAi ? GITHUB_BLOB_BASE + briefAi : null,
+      long_ai: longAi ? GITHUB_BLOB_BASE + longAi : null,
+
+      ...flat
+    }));
+
   } catch (error) {
+    console.error("Failed to load YAML:", path, error);
+
     if (bnglItems.length === 0) {
       return [{
         type: typeFromPath(path),
         file: basename(path),
         path,
+
         yaml_file: basename(path),
         yaml_path: path,
+
         github: readmeUrl,
         github_link: readmeUrl,
+
         yaml_github: yamlGitHubUrl,
+        has_named_yaml: hasYamlLink,
+
         raw: rawUrl,
+
         bngl_item: null,
         bnglviz: null,
         rules_railroad: null,
         bngplayground: null,
+
         parse_error: error.message
       }];
     }
 
-return bnglItems.map(item => ({
-  type: typeFromPath(path),
-  file: basename(item.path),
-  path: item.path,
-  yaml_file: path,
-  yaml_path: path,
-  bngl_file: item.label,
-  bngl_path: item.path,
-  github: readmeUrl,
-  github_link: readmeUrl,
-  yaml_github: yamlGitHubUrl,
-  raw: rawUrl,
-  bngl_item: item,
-  bnglviz: item,
-  rules_railroad: item,
-  bngplayground: item,
+    return bnglItems.map(item => ({
+      type: typeFromPath(path),
 
-  brief_ai: briefAi ? GITHUB_BLOB_BASE + briefAi : null,
-  long_ai: longAi ? GITHUB_BLOB_BASE + longAi : null,
+      file: basename(item.path),
+      path: item.path,
 
-  parse_error: error.message
-}));
+      yaml_file: basename(path),
+      yaml_path: path,
+
+      bngl_file: item.label,
+      bngl_path: item.path,
+
+      github: readmeUrl,
+      github_link: readmeUrl,
+
+      yaml_github: yamlGitHubUrl,
+      has_named_yaml: hasYamlLink,
+      raw: rawUrl,
+
+      bngl_item: item,
+      bnglviz: item,
+      rules_railroad: item,
+      bngplayground: item,
+
+      brief_ai: briefAi ? GITHUB_BLOB_BASE + briefAi : null,
+      long_ai: longAi ? GITHUB_BLOB_BASE + longAi : null,
+
+      parse_error: error.message
+    }));
   }
 }
 
@@ -554,75 +647,96 @@ async function loadAllMetadata() {
   path.endsWith("aigenerated_detailed.md")
 );
 
-  const allYamlPaths = allPaths.filter(isYamlPath);
+const allYamlPaths = allPaths.filter(isYamlPath);
 
-const yamlByFolder = new Map();
+const bnglPaths = allPaths.filter(isBnglPath);
 
-for (const path of allYamlPaths) {
-  if (
-    /_metadata\.ya?ml$/i.test(path) ||
-    /\/metadata\.ya?ml$/i.test(path)
-  ) {
-    const folder = dirname(path);
-
-    if (!yamlByFolder.has(folder)) {
-      yamlByFolder.set(folder, []);
-    }
-
-    yamlByFolder.get(folder).push(path);
-  }
-}
-
-const yamlPaths = [];
-
-for (const files of yamlByFolder.values()) {
-
-  const aiSpecific = files.filter(f =>
-    /_metadata_aigenerated\.ya?ml$/i.test(f)
-  );
-
-  const aiGeneric = files.filter(f =>
-    /\/metadata_aigenerated\.ya?ml$/i.test(f)
-  );
-
-  const specific = files.filter(f =>
-    /_metadata\.ya?ml$/i.test(f) &&
-    !/_metadata_aigenerated\.ya?ml$/i.test(f)
-  );
-
-  const generic = files.filter(f =>
-    /\/metadata\.ya?ml$/i.test(f) &&
-    !/metadata_aigenerated\.ya?ml$/i.test(f)
-  );
-
-  if (aiSpecific.length > 0) {
-    yamlPaths.push(...aiSpecific);
-  } else if (aiGeneric.length > 0) {
-    yamlPaths.push(...aiGeneric);
-  } else if (specific.length > 0) {
-    yamlPaths.push(...specific);
-  } else {
-    yamlPaths.push(...generic);
-  }
-}
-
-console.log(
-  "Thomas2016 YAMLs:",
-  yamlPaths.filter(p => p.includes("Thomas2016"))
+// Ignore AI-generated YAML files completely.
+const usableYamlPaths = allYamlPaths.filter(path =>
+  !/_aigenerated\.ya?ml$/i.test(path)
 );
 
-  const bnglPaths = allPaths.filter(isBnglPath);
+// For each model folder:
+// 1. Prefer NAME_metadata.yaml
+// 2. Otherwise fall back to metadata.yaml
+// 3. Otherwise use no YAML, but keep the model
+const metadataSources = [];
 
-  statusEl.textContent =
-    `Found ${yamlPaths.length} YAML file(s) and ${bnglPaths.length} BNGL file(s). Loading metadata...`;
+const modelFolders = [...new Set(bnglPaths.map(dirname))];
 
-  const rowGroups = await Promise.all(
-yamlPaths.map(path => loadYamlFile(path, bnglPaths, aiFiles))
+for (const folder of modelFolders) {
+  const folderBnglPaths = bnglPaths.filter(path => dirname(path) === folder);
+
+  // Look for NAME_metadata.yaml
+  const namedYaml = usableYamlPaths.find(path => {
+    if (dirname(path) !== folder) return false;
+
+    const filename = basename(path);
+
+    // NAME_metadata.yaml / NAME_metadata.yml
+    return /^[^/]+_metadata\.ya?ml$/i.test(filename) &&
+           !/^metadata\.ya?ml$/i.test(filename);
+  });
+
+  // Generic metadata.yaml fallback
+  const genericYaml = usableYamlPaths.find(path =>
+    dirname(path) === folder &&
+    /^metadata\.ya?ml$/i.test(basename(path))
   );
+
+  if (namedYaml) {
+    metadataSources.push({
+      folder,
+      metadataPath: namedYaml,
+      hasYamlLink: true,
+      bnglPaths: folderBnglPaths
+    });
+  } else if (genericYaml) {
+    metadataSources.push({
+      folder,
+      metadataPath: genericYaml,
+      hasYamlLink: false,
+      bnglPaths: folderBnglPaths
+    });
+  } else {
+    metadataSources.push({
+      folder,
+      metadataPath: null,
+      hasYamlLink: false,
+      bnglPaths: folderBnglPaths
+    });
+  }
+}
+
+console.log("Metadata sources selected:", metadataSources);
+
+const namedYamlCount = metadataSources.filter(source => source.hasYamlLink).length;
+const fallbackYamlCount = metadataSources.filter(
+  source => source.metadataPath && !source.hasYamlLink
+).length;
+const noYamlCount = metadataSources.filter(
+  source => !source.metadataPath
+).length;
+
+statusEl.textContent =
+  `Found ${namedYamlCount} NAME_metadata.yaml file(s), ` +
+  `${fallbackYamlCount} metadata.yaml fallback(s), ` +
+  `and ${noYamlCount} model folder(s) with no YAML. ` +
+  `Loading metadata...`;
+
+const rowGroups = await Promise.all(
+  metadataSources.map(source => loadYamlFile(source, aiFiles))
+);
 
 rows = rowGroups.flat();
 
-console.log("YAML files loaded:", yamlPaths.length);
+console.log("Rows before database visibility filter:", rows.length);
+
+rows = rows.filter(row => isDatabaseVisible(row));
+
+console.log("Rows after database visibility filter:", rows.length);
+
+console.log("Metadata sources loaded:", metadataSources.length);
 console.log("Rows created:", rows.length);
 
 console.table(
@@ -731,6 +845,8 @@ console.log("rows:", rows.length);
     "compatibility.uses_multiple_identical_sites",
     "compatibility.uses_trash_molecules",
     "compatibility.uses_vcell_compartments",
+    "compatibility.database_visible",
+    "has_named_yaml",
     "parse_error"
   ];
 
@@ -863,8 +979,16 @@ if (column === "description") {
       const githubLink = row.path 
         ? ` <a href="${escapeHtml(GITHUB_TREE_BASE + dirname(row.path))}" target="_blank" rel="noopener" style="margin-left: 8px; font-weight: 600;">GitHub</a>` : "";
 
-      const yamlLink = row.raw 
-        ? ` <a href="${escapeHtml(row.raw)}" target="_blank" rel="noopener" style="margin-left: 8px; font-weight: 600;">yaml</a>` : "";
+      const yamlLink = row.yaml_github
+        ? ` <a href="${escapeHtml(row.yaml_github)}"
+                target="_blank"
+                rel="noopener"
+                style="margin-left: 8px; font-weight: 600;">
+            ${row.has_named_yaml ? "yaml" : "NO YAML!"}
+          </a>`
+        : ` <span style="margin-left: 8px; font-weight: 600;">
+            NO YAML!
+          </span>`;
 
         return `<span>${escapeHtml(value)}</span>${compatibilityIcons}${featureIcons}${githubLink}${yamlLink}`;
     }
@@ -1010,10 +1134,12 @@ if (column === "ai_column") {
     `;
   }
 
-  if (column === "citation.pmid") {
-  if (!value) return "";
+if (column === "citation.pmid") {
+  const pmid = String(value ?? "").trim();
 
-  const pmid = String(value).trim();
+  if (!pmid || pmid.toLowerCase() === "no id") {
+    return "";
+  }
 
   return `
     <a href="https://pubmed.ncbi.nlm.nih.gov/${encodeURIComponent(pmid)}/"
@@ -1319,9 +1445,11 @@ function updatePagination(totalFilteredRows) {
 }
 
 function updateStatus() {
-  // Use row.type instead of row["source.origin"]
-  const typeCounts = rows.reduce((acc, row) => {
-    const modelType = row.type || "Unknown"; // Fallback just in case
+  const filteredRows = getFilteredSortedRows();
+  const allVisibleRows = getFilteredSortedRows({ includeCollections: true });
+
+  const typeCounts = allVisibleRows.reduce((acc, row) => {
+    const modelType = row.type || "Unknown";
     acc[modelType] = (acc[modelType] || 0) + 1;
     return acc;
   }, {});
@@ -1330,9 +1458,8 @@ function updateStatus() {
     .map(type => `${type}: ${typeCounts[type] || 0}`)
     .join("; ");
 
-  // Update hero statistics
   document.getElementById("modelCount").textContent =
-    `${rows.length} Total Models`;
+    `${allVisibleRows.length} Total Models`;
 
   document.getElementById("modelSummary").innerHTML = `
     <span class="stat published">
@@ -1352,6 +1479,52 @@ function updateStatus() {
 
 function getRowsForCsv() {
   return getFilteredSortedRows();
+}
+
+function getFilteredSortedRows(options = {}) {
+  const { includeCollections = false } = options;
+  const query = searchEl.value.trim().toLowerCase();
+
+  let filteredRows = rows
+    .filter(row => rowMatchesSearch(row, query))
+    .filter(row => rowMatchesDifficulty(row))
+    .filter(row => rowMatchesType(row))
+    .filter(row => rowMatchesCollections(row) || includeCollections)
+    .filter(row => rowMatchesFeatureFilters(row))
+    .filter(row => rowMatchesSimulationFilters(row));
+
+  if (sortState.column && !NON_SORTABLE_COLUMNS.has(sortState.column)) {
+    const column = sortState.column;
+    const direction = sortState.direction;
+
+    filteredRows = [...filteredRows].sort((a, b) => {
+      if (column === "citation.year") {
+        const ay = parseInt(a["citation.year"], 10);
+        const by = parseInt(b["citation.year"], 10);
+
+        const aMissing = isNaN(ay);
+        const bMissing = isNaN(by);
+
+        if (aMissing && bMissing) return 0;
+        if (aMissing) return 1;
+        if (bMissing) return -1;
+
+        return direction === 1
+          ? ay - by
+          : by - ay;
+      }
+
+      const av = valueForSort(a, column);
+      const bv = valueForSort(b, column);
+
+      return av.localeCompare(bv, undefined, {
+        numeric: true,
+        sensitivity: "base"
+      }) * direction;
+    });
+  }
+
+  return filteredRows;
 }
 
 function csvValueForColumn(row, column) {
